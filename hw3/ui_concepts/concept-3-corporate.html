@@ -1,0 +1,24 @@
+<!doctype html><html lang="ru"><head><meta charset="utf-8"><title>Концепция 3 — Корпоративный</title>
+<style>
+*{box-sizing:border-box;margin:0}body{font-family:-apple-system,"Segoe UI",Arial,sans-serif;background:#f1f5f9;color:#0f172a;font-size:14px}
+nav{display:flex;justify-content:space-between;align-items:center;padding:14px 32px;background:#0f172a;color:#e2e8f0}
+.logo{font-weight:700;font-size:16px}.nav a{margin-left:24px;color:#94a3b8}
+.wrap{display:grid;grid-template-columns:240px 1fr 300px;gap:24px;padding:24px 32px}
+.panel{background:#fff;border:1px solid #e2e8f0;border-radius:8px;padding:20px}
+h2{font-size:13px;text-transform:uppercase;letter-spacing:1px;color:#64748b;margin-bottom:14px}
+label{display:flex;gap:8px;align-items:center;margin:10px 0}.range{height:6px;background:#cbd5e1;border-radius:3px;margin:16px 0 6px;position:relative}.range:after{content:"";position:absolute;left:20%;right:30%;top:0;bottom:0;background:#2563eb;border-radius:3px}
+table{width:100%;border-collapse:collapse}th{text-align:left;color:#64748b;font-weight:500;padding:10px;border-bottom:1px solid #e2e8f0}td{padding:14px 10px;border-bottom:1px solid #f1f5f9}
+.name{display:flex;gap:12px;align-items:center;font-weight:600}.ic{width:40px;height:40px;border-radius:6px;background:#eff6ff;display:flex;align-items:center;justify-content:center;font-size:22px}
+select{border:1px solid #cbd5e1;border-radius:6px;padding:6px}.b{background:#2563eb;color:#fff;border:0;border-radius:6px;padding:8px 14px}
+.line{display:flex;justify-content:space-between;margin:10px 0}.muted{color:#64748b}.total{font-size:20px;font-weight:700;border-top:1px solid #e2e8f0;padding-top:12px}
+.full{width:100%;margin-top:16px;padding:12px}.green{color:#16a34a}
+</style></head><body>
+<nav><div class="logo">NutriBox Business</div><div class="nav"><a>Каталог</a><a>Мои заказы</a><a>Профиль</a></div></nav>
+<div class="wrap">
+<aside class="panel"><h2>Фильтры</h2><b>Цель</b><label><input type="checkbox" checked> Баланс</label><label><input type="checkbox" checked> Похудение</label><label><input type="checkbox" checked> Набор массы</label><br><b>Калорийность</b><div class="range"></div><div class="muted">1200 — 2600 ккал</div><br><b>Срок</b><label><input type="radio" name="d"> 1 день</label><label><input type="radio" name="d"> 5 дней (−5%)</label><label><input type="radio" name="d" checked> 7 дней (−10%)</label></aside>
+<main class="panel"><h2>Рационы · 3</h2><table><tr><th>Рацион</th><th>Ккал</th><th>Цена/день</th><th>Срок</th><th></th></tr>
+<tr><td><div class="name"><div class="ic">🥗</div>Баланс</div></td><td>1800</td><td>1 490 ₽</td><td><select><option>7 дней</option></select></td><td><button class="b">Добавить</button></td></tr>
+<tr><td><div class="name"><div class="ic">🥑</div>Фит</div></td><td>1400</td><td>1 290 ₽</td><td><select><option>7 дней</option></select></td><td><button class="b">Добавить</button></td></tr>
+<tr><td><div class="name"><div class="ic">🍗</div>Спорт</div></td><td>2600</td><td>1 890 ₽</td><td><select><option>7 дней</option></select></td><td><button class="b">Добавить</button></td></tr></table></main>
+<aside class="panel"><h2>Заказ</h2><div class="line"><span>Баланс × 7 дней</span><span>10 430 ₽</span></div><div class="line muted"><span>Скидка за срок</span><span class="green">−1 043 ₽</span></div><div class="line muted"><span>Доставка</span><span class="green">бесплатно</span></div><div class="line total"><span>Итого</span><span>9 387 ₽</span></div><button class="b full">Оформить заказ</button></aside>
+</div></body></html>
