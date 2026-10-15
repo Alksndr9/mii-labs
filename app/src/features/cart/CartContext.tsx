@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { isDietDuration, type DietDuration } from '../../shared/types/diet'
 import { calculateOrderTotal } from './lib/calculateOrderTotal'
+import { trackGoal } from '../../shared/lib/analytics'
 import { findPromo } from './promoCodes'
 import { CartContext, type CartContextValue, type CartLine } from './cartContextValue'
 import type { Promo } from './types'
@@ -39,6 +40,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   }, [lines])
 
   const addItem = useCallback((line: Omit<CartLine, 'quantity'>) => {
+    trackGoal('add_to_cart', { dietId: line.dietId, days: line.days })
     setLines((prev) => {
       const existing = prev.find((l) => l.dietId === line.dietId && l.days === line.days)
       if (!existing) return [...prev, { ...line, quantity: 1 }]
@@ -56,7 +58,10 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
 
   const applyPromo = useCallback((code: string) => {
     const found = findPromo(code)
-    if (found) setPromo({ code: code.trim().toUpperCase(), promo: found })
+    if (found) {
+      setPromo({ code: code.trim().toUpperCase(), promo: found })
+      trackGoal('promo_applied', { code: code.trim().toUpperCase() })
+    }
     return found !== null
   }, [])
 

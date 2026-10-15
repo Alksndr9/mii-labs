@@ -1,3 +1,4 @@
+import { toApiError } from '../../../shared/api/apiError'
 import { supabase } from '../../../shared/api/supabase'
 import { MOCK_MEALS } from './mockMeals'
 import type { Meal, MealGoal } from '../types'
@@ -38,14 +39,14 @@ function delay<T>(value: T): Promise<T> {
 
 export async function fetchMeals(): Promise<Meal[]> {
   if (!supabase) return delay(MOCK_MEALS)
-  const { data, error } = await supabase.from('meals').select('*').order('price_per_day').returns<MealRow[]>()
-  if (error) throw new Error('Не удалось загрузить рационы. Проверьте подключение к интернету.')
+  const { data, error, status } = await supabase.from('meals').select('*').order('price_per_day').returns<MealRow[]>()
+  if (error) throw toApiError(error, status, 'fetchMeals')
   return data.map(toMeal)
 }
 
 export async function fetchMealById(id: string): Promise<Meal | null> {
   if (!supabase) return delay(MOCK_MEALS.find((meal) => meal.id === id) ?? null)
-  const { data, error } = await supabase.from('meals').select('*').eq('id', id).returns<MealRow[]>().maybeSingle()
-  if (error) throw new Error('Не удалось загрузить рацион. Проверьте подключение к интернету.')
+  const { data, error, status } = await supabase.from('meals').select('*').eq('id', id).returns<MealRow[]>().maybeSingle()
+  if (error) throw toApiError(error, status, 'fetchMealById')
   return data ? toMeal(data) : null
 }

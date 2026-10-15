@@ -1,8 +1,9 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { EmptyState } from '../../../shared/ui/StatusViews'
 import { useCart } from '../../cart/cartContextValue'
 import { OrderSummary } from '../../cart/components/OrderSummary'
+import { trackGoal } from '../../../shared/lib/analytics'
 import { createOrder } from '../api/ordersApi'
 import { AddressForm } from '../components/AddressForm'
 
@@ -17,6 +18,10 @@ export function CheckoutPage() {
   const { lines, total, clear } = useCart()
   const [deliveryDate, setDeliveryDate] = useState(earliestDeliveryDate)
   const [orderId, setOrderId] = useState<string | null>(null)
+
+  useEffect(() => {
+    trackGoal('begin_checkout')
+  }, [])
 
   if (orderId)
     return (
@@ -42,6 +47,7 @@ export function CheckoutPage() {
         <AddressForm
           onSubmit={async (address) => {
             const id = await createOrder({ address, deliveryDate, lines, total })
+            trackGoal('order_created', { total: total.total })
             clear()
             setOrderId(id)
           }}

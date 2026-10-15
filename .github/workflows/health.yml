@@ -1,0 +1,28 @@
+name: Health check
+
+# Мониторинг: каждые 30 минут проверяем сайт и health-эндпоинт БД.
+# Падение джобы = алерт: GitHub отправляет владельцу репозитория письмо о failed workflow.
+on:
+  schedule:
+    - cron: '*/30 * * * *'
+  workflow_dispatch:
+
+jobs:
+  health:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Frontend (GitHub Pages)
+        run: |
+          code=$(curl -s -o /dev/null -w '%{http_code}' --max-time 15 https://alksndr9.github.io/mii-labs/)
+          echo "{\"check\":\"frontend\",\"status\":$code}"
+          test "$code" = "200"
+      - name: Backend (Supabase health RPC)
+        if: ${{ vars.SUPABASE_URL != '' }}
+        env:
+          SUPABASE_URL: ${{ vars.SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ vars.SUPABASE_ANON_KEY }}
+        run: |
+          body=$(curl -s --max-time 15 -X POST "$SUPABASE_URL/rest/v1/rpc/health" \
+            -H "apikey: $SUPABASE_ANON_KEY" -H "Authorization: Bearer $SUPABASE_ANON_KEY" -H "Content-Type: application/json")
+          echo "$body"
+          echo "$body" | grep -q '"status": *"ok"'
