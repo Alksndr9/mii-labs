@@ -43,7 +43,7 @@ export function toApiError(error: PostgrestLikeError, status: number | undefined
     kind,
     status,
     code: error.code,
-    message: error.message,
+    // error.message не логируем: в тексте ошибок Postgres бывают значения строк, т.е. ПДн (F-12 аудита)
   })
   return new ApiError(kind)
 }

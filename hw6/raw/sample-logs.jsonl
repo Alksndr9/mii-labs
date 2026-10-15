@@ -1,0 +1,15 @@
+{"ts":"2026-10-15T18:58:02.114Z","level":"info","event":"auth_signed_in"}
+{"ts":"2026-10-15T18:58:40.520Z","level":"info","event":"analytics_goal","context":{"goal":"add_to_cart","dietId":"balance","days":7}}
+{"ts":"2026-10-15T18:59:12.003Z","level":"info","event":"analytics_goal","context":{"goal":"begin_checkout"}}
+{"ts":"2026-10-15T18:59:31.871Z","level":"warning","event":"api_error","context":{"operation":"createOrder","kind":"validation","status":400,"code":"23514"}}
+{"ts":"2026-10-15T18:59:48.240Z","level":"warning","event":"api_error","context":{"operation":"createOrder","kind":"validation","status":400,"code":"23514"}}
+{"ts":"2026-10-15T19:01:05.007Z","level":"warning","event":"api_error","context":{"operation":"createOrder","kind":"forbidden","status":403,"code":"42501"}}
+{"ts":"2026-10-15T19:01:05.990Z","level":"warning","event":"api_error","context":{"operation":"createOrder","kind":"forbidden","status":403,"code":"42501"}}
+{"ts":"2026-10-15T19:01:07.412Z","level":"warning","event":"api_error","context":{"operation":"fetchMyOrders","kind":"unauthorized","status":401,"code":"PGRST303"}}
+{"ts":"2026-10-15T19:03:44.100Z","level":"error","event":"api_error","context":{"operation":"fetchMeals","kind":"network","code":null}}
+{"ts":"2026-10-15T19:03:49.371Z","level":"error","event":"api_error","context":{"operation":"fetchMeals","kind":"network","code":null}}
+{"ts":"2026-10-15T19:03:58.902Z","level":"error","event":"api_error","context":{"operation":"fetchMeals","kind":"server","status":503,"code":"PGRST002"}}
+{"ts":"2026-10-15T19:05:10.555Z","level":"info","event":"order_created","context":{"orderId":17,"clientTotal":938700,"items":1}}
+{"ts":"2026-10-15T19:06:22.018Z","level":"warning","event":"auth_error","context":{"action":"sign_in","code":"invalid_credentials","status":400}}
+{"ts":"2026-10-15T19:06:25.430Z","level":"warning","event":"auth_error","context":{"action":"sign_in","code":"invalid_credentials","status":400}}
+{"ts":"2026-10-15T19:06:29.901Z","level":"warning","event":"auth_error","context":{"action":"sign_in","code":"over_request_rate_limit","status":429}}

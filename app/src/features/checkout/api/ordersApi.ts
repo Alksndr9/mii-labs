@@ -10,6 +10,7 @@ export interface CreateOrderInput {
   deliveryDate: string
   lines: readonly CartLine[]
   total: OrderTotal
+  promoCode: string | null
 }
 
 export async function createOrder(input: CreateOrderInput): Promise<string> {
@@ -17,21 +18,17 @@ export async function createOrder(input: CreateOrderInput): Promise<string> {
     await new Promise((resolve) => setTimeout(resolve, 600))
     return `MOCK-${Date.now().toString(36).toUpperCase()}`
   }
-  // user_id и статус подставляет БД (default auth.uid()), RLS не даст создать заказ за другого пользователя
-  const { data, error, status } = await supabase
-    .from('orders')
-    .insert({
-      street: input.address.street,
-      house: input.address.house,
-      apartment: input.address.apartment,
-      phone: input.address.phone,
-      delivery_date: input.deliveryDate,
-      items: input.lines.map(({ dietId, days, quantity }) => ({ diet_id: dietId, days, quantity })),
-      total: input.total.total,
-    })
-    .select('id')
-    .single()
+  // Сумму считает сервер (RPC create_order) по ценам из БД — клиентскому total не доверяем (F-01 аудита)
+  const { data, error, status } = await supabase.rpc('create_order', {
+    p_street: input.address.street,
+    p_house: input.address.house,
+    p_apartment: input.address.apartment ?? '',
+    p_phone: input.address.phone,
+    p_delivery_date: input.deliveryDate,
+    p_items: input.lines.map(({ dietId, days, quantity }) => ({ diet_id: dietId, days, quantity })),
+    p_promo_code: input.promoCode,
+  })
   if (error) throw toApiError(error, status, 'createOrder')
-  logger.info('order_created', { orderId: data.id, total: input.total.total, items: input.lines.length })
-  return String(data.id)
+  logger.info('order_created', { orderId: data, clientTotal: input.total.total, items: input.lines.length })
+  return String(data)
 }

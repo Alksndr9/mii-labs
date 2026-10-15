@@ -15,7 +15,7 @@ function earliestDeliveryDate(): string {
 }
 
 export function CheckoutPage() {
-  const { lines, total, clear } = useCart()
+  const { lines, total, promoCode, clear } = useCart()
   const [deliveryDate, setDeliveryDate] = useState(earliestDeliveryDate)
   const [orderId, setOrderId] = useState<string | null>(null)
 
@@ -46,7 +46,7 @@ export function CheckoutPage() {
         </div>
         <AddressForm
           onSubmit={async (address) => {
-            const id = await createOrder({ address, deliveryDate, lines, total })
+            const id = await createOrder({ address, deliveryDate, lines, total, promoCode })
             trackGoal('order_created', { total: total.total })
             clear()
             setOrderId(id)

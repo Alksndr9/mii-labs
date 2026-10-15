@@ -1,17 +1,19 @@
-import { useEffect } from 'react'
+import { lazy, Suspense, useEffect } from 'react'
 import { HashRouter, Route, Routes, useLocation } from 'react-router-dom'
 import { Layout } from './app/Layout'
 import { AuthProvider } from './features/auth/AuthProvider'
-import { LoginPage } from './features/auth/pages/LoginPage'
 import { RequireAuth } from './features/auth/RequireAuth'
 import { CartProvider } from './features/cart/CartContext'
 import { CartPage } from './features/cart/pages/CartPage'
 import { CatalogPage } from './features/catalog/pages/CatalogPage'
 import { MealPage } from './features/catalog/pages/MealPage'
-import { CheckoutPage } from './features/checkout/pages/CheckoutPage'
-import { OrdersPage } from './features/orders/pages/OrdersPage'
 import { trackPageView } from './shared/lib/analytics'
-import { EmptyState } from './shared/ui/StatusViews'
+import { EmptyState, LoadingState } from './shared/ui/StatusViews'
+
+// Страницы, не нужные на первом экране, грузятся отдельными чанками
+const LoginPage = lazy(() => import('./features/auth/pages/LoginPage').then((m) => ({ default: m.LoginPage })))
+const CheckoutPage = lazy(() => import('./features/checkout/pages/CheckoutPage').then((m) => ({ default: m.CheckoutPage })))
+const OrdersPage = lazy(() => import('./features/orders/pages/OrdersPage').then((m) => ({ default: m.OrdersPage })))
 
 function PageViewTracker() {
   const { pathname } = useLocation()
@@ -26,6 +28,7 @@ export function App() {
     <CartProvider>
       <HashRouter>
         <PageViewTracker />
+        <Suspense fallback={<LoadingState />}>
         <Routes>
           <Route element={<Layout />}>
             <Route index element={<CatalogPage />} />
@@ -37,6 +40,7 @@ export function App() {
             <Route path="*" element={<EmptyState title="Страница не найдена" />} />
           </Route>
         </Routes>
+        </Suspense>
       </HashRouter>
     </CartProvider>
     </AuthProvider>

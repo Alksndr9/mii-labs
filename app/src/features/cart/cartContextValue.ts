@@ -14,7 +14,7 @@ export interface CartContextValue {
   promoCode: string | null
   addItem: (line: Omit<CartLine, 'quantity'>) => void
   setQuantity: (dietId: string, days: DietDuration, quantity: number) => void
-  applyPromo: (code: string) => boolean
+  applyPromo: (code: string) => Promise<boolean>
   clearPromo: () => void
   clear: () => void
 }

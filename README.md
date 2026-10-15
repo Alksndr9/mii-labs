@@ -9,4 +9,6 @@
 | 3 | UI-концепции, User Stories, ТЗ | [hw3/](hw3/) — [описание](hw3/project_description.md), [UI](hw3/ui_concepts/ui_description.md), [истории](hw3/user_stories.md), [ТЗ](hw3/technical_specification.md) |
 | 4 | Frontend с AI-агентом | [отчёт](hw4/development_report.md), [код](app/), [демо](https://alksndr9.github.io/mii-labs/) |
 | 5 | Backend и интеграция с Frontend | [документация](hw5/backend_documentation.md), [миграции](supabase/) |
-| 6 | CI/CD и интеграция сервисов | — |
+| 6 | CI/CD и интеграция сервисов | [интеграции](hw6/integration_documentation.md), [аудит](hw6/security_audit.md), [пайплайн](.github/workflows/ci.yml) |
+
+**Демо приложения:** https://alksndr9.github.io/mii-labs/ · **Код:** [app/](app/) · **БД:** [supabase/](supabase/)

@@ -44,9 +44,9 @@ export function CartPage() {
 
       <aside className="h-fit space-y-5 rounded-2xl bg-white p-5 ring-1 ring-stone-100">
         <form
-          onSubmit={(e) => {
+          onSubmit={async (e) => {
             e.preventDefault()
-            setPromoError(applyPromo(code) ? null : 'Промокод не найден')
+            setPromoError((await applyPromo(code)) ? null : 'Промокод не найден')
           }}
         >
           <label htmlFor="promo" className="text-sm font-medium">Промокод</label>

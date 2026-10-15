@@ -50,7 +50,7 @@ export function LoginPage() {
         </label>
         <label className="block text-sm">
           Пароль
-          <input type="password" required minLength={6} autoComplete={mode === 'signIn' ? 'current-password' : 'new-password'} value={password} onChange={(e) => setPassword(e.target.value)} className="mt-1 w-full rounded-lg border border-stone-300 px-3 py-2" />
+          <input type="password" required minLength={8} autoComplete={mode === 'signIn' ? 'current-password' : 'new-password'} value={password} onChange={(e) => setPassword(e.target.value)} className="mt-1 w-full rounded-lg border border-stone-300 px-3 py-2" />
         </label>
         {error && <p role="alert" className="text-sm text-red-700">{error}</p>}
         {info && <p role="status" className="text-sm text-green-700">{info}</p>}

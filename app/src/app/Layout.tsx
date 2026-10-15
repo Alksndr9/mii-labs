@@ -27,6 +27,11 @@ export function Layout() {
           </div>
         </nav>
       </header>
+      {!enabled && (
+        <p role="note" className="bg-amber-100 px-4 py-2 text-center text-sm text-amber-900">
+          Демо-режим: бэкенд не подключён, заказы не сохраняются.
+        </p>
+      )}
       <main className="mx-auto max-w-6xl px-4 sm:px-8">
         <Outlet />
       </main>

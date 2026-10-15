@@ -7,8 +7,7 @@ import { AuthContext, type AuthContextValue } from './authContextValue'
 
 const AUTH_MESSAGES: Record<string, string> = {
   invalid_credentials: 'Неверный email или пароль.',
-  user_already_exists: 'Пользователь с таким email уже зарегистрирован.',
-  weak_password: 'Пароль слишком простой: минимум 6 символов.',
+  weak_password: 'Пароль слишком простой: минимум 8 символов.',
   email_not_confirmed: 'Подтвердите email — ссылка отправлена на почту.',
   over_request_rate_limit: 'Слишком много попыток. Подождите минуту.',
 }

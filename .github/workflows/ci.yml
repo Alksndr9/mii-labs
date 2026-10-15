@@ -33,8 +33,17 @@ jobs:
         run: npm run lint
       - name: Unit tests
         run: npm test
-      - name: Security audit (prod dependencies)
+      - name: Security audit (prod dependencies, blocking)
         run: npm audit --omit=dev --audit-level=high
+      - name: Security audit (all dependencies, report only)
+        run: npm audit --audit-level=moderate
+        continue-on-error: true
+      - name: Warn if backend secrets are missing
+        if: github.ref == 'refs/heads/main'
+        env:
+          SB_URL: ${{ secrets.VITE_SUPABASE_URL }}
+        run: |
+          if [ -z "$SB_URL" ]; then echo "::warning::VITE_SUPABASE_URL не задан — сайт соберётся в демо-режиме без бэкенда"; fi
       - name: Build
         run: npm run build
         env:

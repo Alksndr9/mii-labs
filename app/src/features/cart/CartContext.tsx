@@ -56,8 +56,8 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     )
   }, [])
 
-  const applyPromo = useCallback((code: string) => {
-    const found = findPromo(code)
+  const applyPromo = useCallback(async (code: string) => {
+    const found = await findPromo(code)
     if (found) {
       setPromo({ code: code.trim().toUpperCase(), promo: found })
       trackGoal('promo_applied', { code: code.trim().toUpperCase() })
