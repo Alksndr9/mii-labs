@@ -2,8 +2,10 @@ export interface Meal {
   id: string
   title: string
   calories: number
+  /** Цена за один день, ₽ */
   price: number
   imageUrl: string
+  isHit?: boolean
 }
 
 export const meals: Meal[] = [
@@ -13,6 +15,7 @@ export const meals: Meal[] = [
     calories: 1800,
     price: 1490,
     imageUrl: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=600',
+    isHit: true,
   },
   {
     id: 'fit',
