@@ -65,7 +65,22 @@ claude --version
 
 ### 4.3 Тестовый проект
 
-<!-- TODO: заполнить после создания проекта в test-project/ -->
+Тестовый проект `test-project/` создан с помощью Claude Code: React + TypeScript на Vite, стилизация через Tailwind CSS v4.
+
+```bash
+npm create vite@latest test-project -- --template react-ts
+cd test-project && npm install
+npm install -D tailwindcss @tailwindcss/vite
+```
+
+Агент сам подключил плагин Tailwind в `vite.config.ts`, убрал стартовый шаблон Vite и проверил сборку (`npm run build`).
+
+Запуск:
+```bash
+cd hw1/test-project
+npm install
+npm run dev
+```
 
 ## 5. Практическое применение
 
