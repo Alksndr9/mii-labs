@@ -59,7 +59,21 @@ claude --version
 
 ### 4.2 Подключение MCP
 
-<!-- TODO: заполнить после подключения MCP -->
+Подключён MCP-сервер **Context7**: он отдаёт агенту актуальную документацию библиотек (React, Vite, Tailwind, Supabase). Без него модель опирается на знания на дату обучения и может предлагать устаревшие API. Например, Tailwind v4 настраивается иначе, чем v3, без `tailwind.config.js`.
+
+Сервер добавлен на уровне проекта, конфигурация лежит в репозитории (`.mcp.json`), поэтому подхватывается у любого, кто клонирует проект:
+
+```bash
+claude mcp add --scope project --transport http context7 https://mcp.context7.com/mcp
+```
+
+```json
+{
+  "mcpServers": {
+    "context7": { "type": "http", "url": "https://mcp.context7.com/mcp" }
+  }
+}
+```
 
 ![Список MCP-серверов](screenshots/02-mcp.png)
 
