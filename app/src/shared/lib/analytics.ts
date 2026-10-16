@@ -2,27 +2,33 @@ import { logger, onLog } from './logger'
 
 declare global {
   interface Window {
-    ym?: (counterId: number, method: string, ...args: unknown[]) => void
+    dataLayer?: unknown[]
+    gtag?: (...args: unknown[]) => void
   }
 }
 
 export type AnalyticsGoal = 'add_to_cart' | 'begin_checkout' | 'order_created' | 'promo_applied' | 'sign_up' | 'app_error'
 
-const counterId = Number(import.meta.env.VITE_YANDEX_METRIKA_ID ?? 0)
+const measurementId = import.meta.env.VITE_GA_MEASUREMENT_ID ?? ''
 
-/** Подключает счётчик Яндекс.Метрики. Без VITE_YANDEX_METRIKA_ID аналитика выключена (локальная разработка, тесты). */
+/** Подключает Google Analytics 4. Без VITE_GA_MEASUREMENT_ID аналитика выключена (локальная разработка, тесты). */
 export function initAnalytics(): void {
-  if (!counterId || typeof document === 'undefined') return
-  // Очередь вызовов до загрузки tag.js — стандартный приём сниппета Метрики
-  const queue: unknown[][] = []
-  window.ym = window.ym ?? Object.assign((...args: unknown[]) => void queue.push(args), { a: queue, l: Date.now() })
+  if (!measurementId || typeof document === 'undefined') return
+  // Очередь вызовов до загрузки gtag.js — стандартный сниппет GA4: gtag.js читает именно объект arguments
+  window.dataLayer = window.dataLayer ?? []
+  window.gtag = function gtag() {
+    // oxlint-disable-next-line prefer-rest-params
+    window.dataLayer?.push(arguments)
+  }
   const script = document.createElement('script')
   script.async = true
-  script.src = 'https://mc.yandex.ru/metrika/tag.js'
+  script.src = `https://www.googletagmanager.com/gtag/js?id=${measurementId}`
   document.head.appendChild(script)
-  window.ym(counterId, 'init', { clickmap: true, trackLinks: true, accurateTrackBounce: true, webvisor: false })
+  window.gtag('js', new Date())
+  // Просмотры страниц отправляем сами (trackPageView), иначе GA не увидит переходы HashRouter
+  window.gtag('config', measurementId, { send_page_view: false })
 
-  // Ошибки из структурированного лога дублируются в Метрику как цель — видно, на каком шаге воронки они случаются
+  // Ошибки из структурированного лога дублируются в GA как событие — видно, на каком шаге воронки они случаются
   onLog((entry) => {
     if (entry.level === 'error') trackGoal('app_error', { event: entry.event })
   })
@@ -30,10 +36,12 @@ export function initAnalytics(): void {
 
 export function trackGoal(goal: AnalyticsGoal, params?: Record<string, unknown>): void {
   logger.info('analytics_goal', { goal, ...params })
-  if (counterId && window.ym) window.ym(counterId, 'reachGoal', goal, params)
+  if (measurementId && window.gtag) window.gtag('event', goal, params)
 }
 
-/** HashRouter не перезагружает страницу — переходы отправляются в Метрику вручную. */
+/** HashRouter не перезагружает страницу — переходы отправляются в GA вручную. */
 export function trackPageView(path: string): void {
-  if (counterId && window.ym) window.ym(counterId, 'hit', window.location.origin + import.meta.env.BASE_URL + '#' + path)
+  if (measurementId && window.gtag) {
+    window.gtag('event', 'page_view', { page_location: window.location.origin + import.meta.env.BASE_URL + '#' + path, page_path: path })
+  }
 }

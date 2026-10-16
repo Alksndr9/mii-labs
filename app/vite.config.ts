@@ -7,11 +7,10 @@ import { defineConfig, type Plugin } from 'vite'
 // Только для production-сборки: dev-сервер Vite использует inline-скрипты для hot reload.
 const CSP = [
   "default-src 'self'",
-  "script-src 'self' https://mc.yandex.ru https://yastatic.net",
-  "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://mc.yandex.ru https://mc.yandex.com",
-  "img-src 'self' data: https://images.unsplash.com https://mc.yandex.ru https://mc.yandex.com",
+  "script-src 'self' https://www.googletagmanager.com",
+  "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com",
+  "img-src 'self' data: https://images.unsplash.com https://*.google-analytics.com https://*.googletagmanager.com",
   "style-src 'self' 'unsafe-inline'",
-  "frame-src https://mc.yandex.ru https://mc.yandex.com",
   "base-uri 'self'",
   "form-action 'self'",
   "object-src 'none'",
