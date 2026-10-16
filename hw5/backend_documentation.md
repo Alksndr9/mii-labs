@@ -76,7 +76,7 @@ erDiagram
 ## 3. Безопасность
 
 ### 3.1. Аутентификация
-Supabase Auth: регистрация и вход по email + пароль (минимум 6 символов), вход через Google OAuth2 (ДЗ6). Сессия хранится supabase-js и автоматически обновляется (refresh token). Страницы оформления и «Мои заказы» закрыты компонентом `RequireAuth` — без входа идёт редирект на `/login` с возвратом обратно.
+Supabase Auth: регистрация и вход по email + пароль (минимум 8 символов), вход через Google OAuth2 (ДЗ6). Сессия хранится supabase-js и автоматически обновляется (refresh token). Страницы оформления и «Мои заказы» закрыты компонентом `RequireAuth` — без входа идёт редирект на `/login` с возвратом обратно.
 
 ### 3.2. Row Level Security
 RLS включён на всех таблицах; без явной политики доступ запрещён.
@@ -86,7 +86,7 @@ RLS включён на всех таблицах; без явной полит�
 | `meals` | SELECT | anon, authenticated | всем (каталог публичный) |
 | `meals` | INSERT/UPDATE/DELETE | — | запрещено (только миграции / Studio) |
 | `orders` | SELECT | authenticated | `user_id = auth.uid()` |
-| `orders` | INSERT | authenticated | `user_id = auth.uid() and status = 'pending_payment'` |
+| `orders` | INSERT | — | прямая вставка запрещена; заказ создаётся только RPC `create_order` (сервер сам считает сумму, ДЗ6 F-01) |
 | `orders` | UPDATE | authenticated | только свой заказ, только `pending_payment → cancelled`; колоночный `grant update (status)` — менять адрес и сумму нельзя |
 | `orders` | DELETE | — | запрещено |
 
@@ -110,7 +110,8 @@ PostgREST Supabase отвечает с `Access-Control-Allow-Origin: *`, но д
 |---|---|---|---|
 | GET | `/meals?select=*&order=price_per_day` | каталог рационов | все |
 | GET | `/meals?id=eq.balance` | один рацион | все |
-| POST | `/orders` | создать заказ (Create) | авторизованные |
+| POST | `/rpc/create_order` | создать заказ (Create), сумму считает сервер | авторизованные |
+| POST | `/rpc/get_promo` | проверить промокод | все |
 | GET | `/orders?select=id,status,total&order=created_at.desc` | мои заказы (Read) | владелец |
 | PATCH | `/orders?id=eq.{id}` `{"status":"cancelled"}` | отменить заказ (Update) | владелец, только `pending_payment` |
 | POST | `/rpc/health` | health check | все |
@@ -126,10 +127,10 @@ curl "$SB/rest/v1/meals?select=id,title,price_per_day&order=price_per_day" -H "a
 TOKEN=$(curl -s "$SB/auth/v1/token?grant_type=password" -H "apikey: $ANON" -H "Content-Type: application/json" \
   -d '{"email":"user@example.com","password":"secret123"}' | jq -r .access_token)
 
-# Создать заказ
-curl -X POST "$SB/rest/v1/orders" -H "apikey: $ANON" -H "Authorization: Bearer $TOKEN" \
-  -H "Content-Type: application/json" -H "Prefer: return=representation" \
-  -d '{"street":"ул. Мира","house":"12","phone":"+79001234567","delivery_date":"2026-10-20","items":[{"diet_id":"balance","days":7,"quantity":1}],"total":938700}'
+# Создать заказ (сумму считает сервер, поле total не передаётся)
+curl -X POST "$SB/rest/v1/rpc/create_order" -H "apikey: $ANON" -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"p_street":"ул. Мира","p_house":"12","p_apartment":null,"p_phone":"+79001234567","p_delivery_date":"2026-10-25","p_items":[{"diet_id":"balance","days":7,"quantity":1}],"p_promo_code":null}'
 
 # Отменить заказ
 curl -X PATCH "$SB/rest/v1/orders?id=eq.1" -H "apikey: $ANON" -H "Authorization: Bearer $TOKEN" \
@@ -157,15 +158,15 @@ curl -X POST "$SB/rest/v1/rpc/health" -H "apikey: $ANON"
 - Все ошибки Supabase проходят через `toApiError` ([`shared/api/apiError.ts`](../app/src/shared/api/apiError.ts)) — перевод кода в понятное сообщение + запись в лог (покрыто тестами).
 - Логи — структурированный JSON ([`shared/lib/logger.ts`](../app/src/shared/lib/logger.ts)): `{"ts","level","event","context"}`, уровни `info / warning / error`. Пример:
   ```json
-  {"ts":"2026-10-15T19:02:11.412Z","level":"warning","event":"api_error","context":{"operation":"createOrder","kind":"forbidden","status":403,"code":"42501","message":"new row violates row-level security policy for table \"orders\""}}
+  {"ts":"2026-10-15T19:02:11.412Z","level":"warning","event":"api_error","context":{"operation":"createOrder","kind":"forbidden","status":403,"code":"42501"}}
   ```
 - Серверные логи — Supabase Dashboard → Logs (API, Postgres, Auth).
 
 ## 7. Развёртывание
 
 ### 7.1. Supabase
-1. Создать проект на [supabase.com](https://supabase.com) (регион — EU Central).
-2. **SQL Editor** → выполнить [`supabase/migrations/20261015000000_init.sql`](../supabase/migrations/20261015000000_init.sql), затем [`supabase/seed.sql`](../supabase/seed.sql).
+1. Создать проект на [supabase.com](https://supabase.com) (использован регион West EU, Ireland).
+2. **SQL Editor** → выполнить по порядку [`20261015000000_init.sql`](../supabase/migrations/20261015000000_init.sql), [`20261015010000_security_hardening.sql`](../supabase/migrations/20261015010000_security_hardening.sql), затем [`supabase/seed.sql`](../supabase/seed.sql).
    _Альтернатива через CLI:_ `npx supabase link --project-ref <ref> && npx supabase db push && npx supabase db seed`.
 3. **Authentication → URL Configuration:** Site URL `https://alksndr9.github.io/mii-labs/`, Redirect URLs — он же и `http://localhost:5173/mii-labs/`.
 4. **Project Settings → API:** скопировать `Project URL` и `anon public` ключ.
@@ -178,7 +179,16 @@ npm install && npm run dev
 ```
 Для продакшена: GitHub → Settings → Secrets and variables → Actions → секреты `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY` (используются при сборке в CI).
 
-## 8. Разработка с AI
+## 8. Проверка на развёрнутом проекте (16.10.2026)
+| Проверка | Результат |
+|---|---|
+| `POST /rpc/health` | `{"status":"ok","db":true,"meals":4}` |
+| Каталог анонимно | 4 рациона из БД |
+| Аноним читает `promo_codes` / `orders` | `42501 permission denied` ✅ |
+| Аноним вставляет в `orders` напрямую или вызывает `create_order` | `42501 permission denied` ✅ |
+| Вход через Google на https://alksndr9.github.io/mii-labs/ | работает |
+
+## 9. Разработка с AI
 | Задача | Как использовался AI |
 |---|---|
 | Проектирование БД | по ТЗ и типам фронтенда агент сгенерировал SQL-схему; при проверке добавлены `check`-ограничения, enum статусов из ТЗ (раздел 7.4), индекс под «Мои заказы» |
