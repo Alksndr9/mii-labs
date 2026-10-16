@@ -1,6 +1,10 @@
 import { useState } from 'react'
-import { Navigate, useLocation, useNavigate } from 'react-router-dom'
+import { Navigate, useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 import { useAuth } from '../authContextValue'
+
+const OAUTH_MESSAGES: Record<string, string> = {
+  access_denied: 'Вход через Google отменён.',
+}
 
 export function LoginPage() {
   const { enabled, user, signIn, signUp, signInWithGoogle } = useAuth()
@@ -10,7 +14,9 @@ export function LoginPage() {
   const [mode, setMode] = useState<'signIn' | 'signUp'>('signIn')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
-  const [error, setError] = useState<string | null>(null)
+  const [searchParams] = useSearchParams()
+  const oauthError = searchParams.get('oauth_error')
+  const [error, setError] = useState<string | null>(oauthError && (OAUTH_MESSAGES[oauthError] ?? 'Не удалось войти через Google. Попробуйте ещё раз.'))
   const [info, setInfo] = useState<string | null>(null)
   const [busy, setBusy] = useState(false)
 
