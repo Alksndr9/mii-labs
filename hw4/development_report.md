@@ -83,7 +83,7 @@ Mobile-first: базовые стили для телефона, расшире�
 | ![](screenshots/desktop-catalog.png) | ![](screenshots/mobile-catalog.png) |
 | ![](screenshots/desktop-meal.png) | ![](screenshots/mobile-meal.png) |
 
-> На скриншотах вместо фото — заглушки: в момент съёмки CDN изображений (Unsplash) был недоступен, что заодно демонстрирует работу fallback из бага 2.
+> Скриншоты сняты с развёрнутого приложения (https://alksndr9.github.io/mii-labs/, данные из Supabase). Мобильная версия — эмуляция устройства 390×844 через Chrome DevTools Protocol, без ограничения минимальной ширины окна из бага 3.
 
 ## 7. Оптимизация и рефакторинг
 | Что было | Что сделано | Зачем |
